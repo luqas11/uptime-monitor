@@ -63,11 +63,12 @@ A simple tool to monitor server uptime by continuously pinging a target IP addre
 ### Using the Dashboard
 
 - **File Selection**: Use the dropdown menu to select which CSV file to visualize (all CSV files in `src/data/` are automatically detected)
-- **Time Range Selection**: Use the "Start Time" and "End Time" inputs to filter data for specific periods
-- **Default View**: Shows the last 24 hours of data (or all available data if less than 24 hours)
+- **Time Range Selection**: Use the "End Time" selector to choose the end of the 24-hour window you want to view (the chart always displays exactly 24 hours of data)
+- **Default View**: Shows the last 24 hours before the most recent data point
 - **Bar Chart**: 
-  - Green bars indicate periods where the server was online
-  - Red bars indicate periods where the server was offline
+  - Green bars indicate periods where all pings were successful (server was online)
+  - Red bars indicate periods where all pings failed (server was offline)
+  - Yellow bars indicate periods with mixed results (unstable - both successful and failed pings)
   - Gray bars show periods with no data
 
 ### Stopping the Monitor
