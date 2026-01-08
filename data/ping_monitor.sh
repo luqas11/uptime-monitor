@@ -48,9 +48,15 @@ if [ -z "$IP" ]; then
     done
 fi
 
+# Define CSV file path
+CSV_FILE="../src/data/data.csv"
+
+# Ensure the directory exists
+mkdir -p "$(dirname "$CSV_FILE")"
+
 # Initialize CSV file with header if it doesn't exist
-if [ ! -f "data.csv" ]; then
-    echo "timestamp,success" > data.csv
+if [ ! -f "$CSV_FILE" ]; then
+    echo "timestamp,success" > "$CSV_FILE"
 fi
 
 # Function to handle Ctrl+C gracefully
@@ -64,7 +70,7 @@ cleanup() {
 trap cleanup SIGINT SIGTERM
 
 echo "Starting ping monitor for IP: $IP"
-echo "Results will be written to data.csv"
+echo "Results will be written to $CSV_FILE"
 echo "Press Ctrl+C to stop"
 echo ""
 
@@ -88,7 +94,7 @@ while true; do
     fi
     
     # Write to CSV file
-    echo "$TIMESTAMP,$SUCCESS" >> data.csv
+    echo "$TIMESTAMP,$SUCCESS" >> "$CSV_FILE"
     
     # Format timestamp for readable display
     READABLE_TIME=$(date -d "@$TIMESTAMP" +"%H:%M:%S" 2>/dev/null || date +"%H:%M:%S")
