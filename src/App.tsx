@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { UptimeChart } from './components/UptimeChart';
 import { parseCSV } from './utils/csvParser';
 import { UptimeData, ChartDataPoint } from './types';
+import csvContent from './data/data.csv?raw';
 
 function App() {
   const [data, setData] = useState<ChartDataPoint[]>([]);
@@ -9,16 +10,9 @@ function App() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadData = async () => {
+    const loadData = () => {
       try {
         setLoading(true);
-        const response = await fetch(`${import.meta.env.BASE_URL}data/data.csv`);
-        
-        if (!response.ok) {
-          throw new Error(`Failed to load data: ${response.statusText}`);
-        }
-
-        const csvContent = await response.text();
         const parsedData: UptimeData[] = parseCSV(csvContent);
 
         // Transform data for chart display
