@@ -22,12 +22,12 @@ A simple tool to monitor server uptime by continuously pinging a target IP addre
 
 2. **Run the monitoring script** with IP address and CSV filename as arguments:
    ```bash
-   bash data/ping_monitor.sh <IP_ADDRESS> <CSV_FILENAME>
+   bash ping_monitor.sh <IP_ADDRESS> <CSV_FILENAME>
    ```
    
    **Example**:
    ```bash
-   bash data/ping_monitor.sh 192.168.1.1 server1
+   bash ping_monitor.sh 192.168.1.1 server1
    ```
    
    This will:
@@ -38,8 +38,8 @@ A simple tool to monitor server uptime by continuously pinging a target IP addre
 
 4. **Multiple monitors**: You can run multiple instances of the script simultaneously to monitor different IPs:
    ```bash
-   bash data/ping_monitor.sh 192.168.1.1 server1
-   bash data/ping_monitor.sh 8.8.8.8 google_dns
+   bash ping_monitor.sh 192.168.1.1 server1
+   bash ping_monitor.sh 8.8.8.8 google_dns
    ```
 
 ### Viewing the Dashboard

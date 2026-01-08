@@ -65,7 +65,7 @@ if ! validate_filename "$CSV_FILENAME"; then
 fi
 
 # Define CSV file path (path and extension are hardcoded)
-CSV_FILE="../src/data/${CSV_FILENAME}.csv"
+CSV_FILE="./src/data/${CSV_FILENAME}.csv"
 
 # Ensure the directory exists
 mkdir -p "$(dirname "$CSV_FILE")"
