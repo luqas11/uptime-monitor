@@ -12,7 +12,7 @@ function App() {
     const loadData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/data/data.csv');
+        const response = await fetch(`${import.meta.env.BASE_URL}data/data.csv`);
         
         if (!response.ok) {
           throw new Error(`Failed to load data: ${response.statusText}`);
