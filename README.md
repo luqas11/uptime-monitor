@@ -1,5 +1,7 @@
 # Server Uptime Monitor
 
+> **Note**: This project was built entirely using the [Cursor](https://cursor.com) AI agent, made to test the AI development process on a simple project.  
+
 A simple tool to monitor server uptime by continuously pinging a target IP address and visualizing the results in a web dashboard.
 
 ## Technologies Used
