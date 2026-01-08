@@ -2,20 +2,6 @@
 
 A simple tool to monitor server uptime by continuously pinging a target IP address and visualizing the results in a web dashboard.
 
-## Features
-
-- **Continuous Monitoring**: Automatically pings a target IP address at regular intervals
-- **Data Logging**: Records ping results with timestamps in CSV format
-- **Interactive Dashboard**: Web interface with a bar chart visualization
-- **Time Range Selection**: Filter and view data for specific time periods (up to 24 hours)
-- **Real-time Status**: Color-coded bars show online (green) and offline (red) periods
-- **10-minute Aggregation**: Data is grouped into 10-minute intervals for better visualization
-- **Automatic Deployment**: Automatically deployed to GitHub Pages on every commit
-
-## Purpose
-
-This tool helps you monitor the availability of servers, network devices, or any IP address. It continuously checks connectivity and provides a visual representation of uptime history, making it easy to identify downtime periods and network issues.
-
 ## Technologies Used
 
 - **Frontend**: React with TypeScript
@@ -34,14 +20,27 @@ This tool helps you monitor the availability of servers, network devices, or any
    cd uptime-monitor
    ```
 
-2. **Run the monitoring script**:
+2. **Run the monitoring script** with IP address and CSV filename as arguments:
    ```bash
-   bash data/ping_monitor.sh
+   bash data/ping_monitor.sh <IP_ADDRESS> <CSV_FILENAME>
    ```
+   
+   **Example**:
+   ```bash
+   bash data/ping_monitor.sh 192.168.1.1 server1
+   ```
+   
+   This will:
+   - Ping the specified IP address every 60 seconds
+   - Log results to `src/data/server1.csv`
 
-3. **Enter the IP address** when prompted (or it will use the saved IP from `.ip` file)
+3. **File naming rules**: The CSV filename can only contain letters, numbers and underscores.
 
-4. **Let it run**: The script will continuously ping the target and log results to `src/data/data.csv`
+4. **Multiple monitors**: You can run multiple instances of the script simultaneously to monitor different IPs:
+   ```bash
+   bash data/ping_monitor.sh 192.168.1.1 server1
+   bash data/ping_monitor.sh 8.8.8.8 google_dns
+   ```
 
 ### Viewing the Dashboard
 
@@ -61,6 +60,7 @@ This tool helps you monitor the availability of servers, network devices, or any
 
 ### Using the Dashboard
 
+- **File Selection**: Use the dropdown menu to select which CSV file to visualize (all CSV files in `src/data/` are automatically detected)
 - **Time Range Selection**: Use the "Start Time" and "End Time" inputs to filter data for specific periods
 - **Default View**: Shows the last 24 hours of data (or all available data if less than 24 hours)
 - **Bar Chart**: 
@@ -74,9 +74,19 @@ Press `Ctrl+C` in the terminal where the monitoring script is running to stop it
 
 ## Data Format
 
-The CSV file (`src/data/data.csv`) contains two columns:
+All CSV files in `src/data/` follow the same format with two columns:
 - `timestamp`: UNIX timestamp (seconds since epoch)
 - `success`: `true` if ping was successful, `false` if it failed
+
+**Example**:
+```csv
+timestamp,success
+1703123456,true
+1703123516,false
+1703123576,true
+```
+
+You can create multiple CSV files to monitor different servers or IP addresses. All files will be automatically available in the dashboard's file selector.
 
 ## Deployment
 

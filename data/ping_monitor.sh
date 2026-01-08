@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # Script to ping an IP address every 10 seconds and log results to CSV
+# Usage: ./ping_monitor.sh <IP_ADDRESS> <CSV_FILENAME>
+# Example: ./ping_monitor.sh 192.168.1.1 server1
 
 # Function to validate IPv4 address
 validate_ip() {
@@ -22,34 +24,48 @@ validate_ip() {
     return 0
 }
 
-# Try to read IP from .ip file
-IP=""
-if [ -f ".ip" ]; then
-    IP=$(cat .ip | tr -d '[:space:]')
-    if ! validate_ip "$IP"; then
-        IP=""
+# Function to validate CSV filename (only letters, numbers, and underscores)
+validate_filename() {
+    local name=$1
+    
+    # Check if name contains only uppercase letters, lowercase letters, numbers, or underscores
+    if [[ ! $name =~ ^[a-zA-Z0-9_]+$ ]]; then
+        return 1
     fi
+    
+    return 0
+}
+
+# Check if arguments are provided
+if [ $# -lt 2 ]; then
+    echo "Error: Missing arguments" >&2
+    echo "Usage: $0 <IP_ADDRESS> <CSV_FILENAME>" >&2
+    echo "Example: $0 192.168.1.1 server1" >&2
+    exit 1
 fi
 
-# If IP is invalid or file doesn't exist, ask user for IP
-if [ -z "$IP" ]; then
-    while true; do
-        read -p "Please enter a valid IPv4 address: " IP
-        IP=$(echo "$IP" | tr -d '[:space:]')
-        
-        if validate_ip "$IP"; then
-            # Write valid IP to .ip file
-            echo "$IP" > .ip
-            echo "IP address saved to .ip file"
-            break
-        else
-            echo "Error: Invalid IPv4 address. Please try again." >&2
-        fi
-    done
+# Get IP address from first argument
+IP=$(echo "$1" | tr -d '[:space:]')
+
+# Validate IP address
+if ! validate_ip "$IP"; then
+    echo "Error: Invalid IPv4 address: $IP" >&2
+    echo "Please provide a valid IPv4 address (e.g., 192.168.1.1)" >&2
+    exit 1
 fi
 
-# Define CSV file path
-CSV_FILE="../src/data/data.csv"
+# Get CSV filename from second argument
+CSV_FILENAME=$(echo "$2" | tr -d '[:space:]')
+
+# Validate CSV filename
+if ! validate_filename "$CSV_FILENAME"; then
+    echo "Error: Invalid file name: $CSV_FILENAME" >&2
+    echo "File name can only contain uppercase letters, lowercase letters, numbers, or underscores." >&2
+    exit 1
+fi
+
+# Define CSV file path (path and extension are hardcoded)
+CSV_FILE="../src/data/${CSV_FILENAME}.csv"
 
 # Ensure the directory exists
 mkdir -p "$(dirname "$CSV_FILE")"
