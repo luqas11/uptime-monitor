@@ -187,6 +187,13 @@ export function UptimeChart({ data }: UptimeChartProps) {
             content={({ active, payload }) => {
               if (active && payload && payload.length) {
                 const data = payload[0].payload;
+                const date = new Date(data.timestamp * 1000);
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const year = date.getFullYear();
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                const formattedTime = `${day}/${month}/${year} ${hours}:${minutes}`;
                 return (
                   <div style={{
                     backgroundColor: 'white',
@@ -195,7 +202,7 @@ export function UptimeChart({ data }: UptimeChartProps) {
                     border: '1px solid #ccc',
                     borderRadius: '4px'
                   }}>
-                    <p style={{ margin: '4px 0' }}>{`Time: ${new Date(data.timestamp * 1000).toLocaleString('en-US', { hour12: false })}`}</p>
+                    <p style={{ margin: '4px 0' }}>{`Time: ${formattedTime}`}</p>
                     <p style={{ margin: '4px 0' }}>
                       {data.hasData 
                         ? `Status: ${data.uptimeStatus === 'online' ? 'Online' : data.uptimeStatus === 'offline' ? 'Offline' : 'Unstable'}`
