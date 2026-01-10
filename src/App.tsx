@@ -27,25 +27,25 @@ function App() {
       <h1 style={{ textAlign: 'center', marginBottom: '30px' }}>
         Server Uptime Monitor
       </h1>
-      
+
       <ChartSelector
         onDataChange={handleDataChange}
         onLoadingChange={handleLoadingChange}
         onErrorChange={handleErrorChange}
       />
-      
+
       {loading && <p style={{ textAlign: 'center' }}>Loading data...</p>}
-      
+
       {error && (
         <p style={{ textAlign: 'center', color: 'red' }}>
           Error: {error}
         </p>
       )}
-      
+
       {!loading && !error && data.length === 0 && (
         <p style={{ textAlign: 'center' }}>No data available</p>
       )}
-      
+
       {!loading && !error && data.length > 0 && (
         <UptimeChart key={fileKey} data={data} />
       )}

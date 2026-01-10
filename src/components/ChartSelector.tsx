@@ -5,13 +5,6 @@ import { ChartDataPoint } from '../types';
 // Import all CSV files from the data folder
 const csvFiles = import.meta.glob('../data/*.csv', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
 
-interface FileInfo {
-  filename: string;
-  displayName: string;
-  path: string;
-  content: string;
-}
-
 interface ChartSelectorProps {
   onDataChange: (data: ChartDataPoint[], fileKey: number) => void;
   onLoadingChange: (loading: boolean) => void;
@@ -49,7 +42,7 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
       try {
         onLoadingChange(true);
         const selectedFileData = availableFiles.find(f => f.filename === selectedFile);
-        
+
         if (!selectedFileData) {
           throw new Error('Selected file not found');
         }
@@ -81,9 +74,9 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
   }
 
   return (
-    <div style={{ 
-      marginBottom: '20px', 
-      display: 'flex', 
+    <div style={{
+      marginBottom: '20px',
+      display: 'flex',
       justifyContent: 'center',
       alignItems: 'center',
       gap: '10px'
