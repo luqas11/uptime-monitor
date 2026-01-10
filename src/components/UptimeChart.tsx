@@ -31,8 +31,8 @@ export function UptimeChart({ data }: UptimeChartProps) {
     const lastTimestamp = data[data.length - 1].timestamp;
     const lastDate = new Date(lastTimestamp * 1000);
     const roundedMinutes = Math.floor(lastDate.getMinutes() / 10) * 10;
-    return new Date(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate(), 
-                   lastDate.getHours(), roundedMinutes, 0);
+    return new Date(lastDate.getFullYear(), lastDate.getMonth(), lastDate.getDate(),
+      lastDate.getHours(), roundedMinutes, 0);
   }, [data]);
 
   // Calculate min time: 0 hour (midnight) of the day of the first data point
@@ -55,8 +55,8 @@ export function UptimeChart({ data }: UptimeChartProps) {
   const startPeriod = useMemo(() => {
     const period24HoursBefore = new Date(endPeriod.getTime() - 24 * 60 * 60 * 1000);
     const roundedMinutes = Math.floor(period24HoursBefore.getMinutes() / 10) * 10;
-    return new Date(period24HoursBefore.getFullYear(), period24HoursBefore.getMonth(), 
-                   period24HoursBefore.getDate(), period24HoursBefore.getHours(), roundedMinutes, 0);
+    return new Date(period24HoursBefore.getFullYear(), period24HoursBefore.getMonth(),
+      period24HoursBefore.getDate(), period24HoursBefore.getHours(), roundedMinutes, 0);
   }, [endPeriod]);
 
   // Get 10-minute period boundaries (always exactly 24 hours)
@@ -65,13 +65,13 @@ export function UptimeChart({ data }: UptimeChartProps) {
 
   // Group data points by 10-minute periods
   const periodMap = new Map<number, boolean[]>();
-  
+
   data.forEach((point) => {
     const pointDate = new Date(point.timestamp * 1000);
     const roundedMinutes = Math.floor(pointDate.getMinutes() / 10) * 10;
     const periodKey = new Date(pointDate.getFullYear(), pointDate.getMonth(), pointDate.getDate(),
-                              pointDate.getHours(), roundedMinutes, 0).getTime();
-    
+      pointDate.getHours(), roundedMinutes, 0).getTime();
+
     if (!periodMap.has(periodKey)) {
       periodMap.set(periodKey, []);
     }
@@ -84,7 +84,6 @@ export function UptimeChart({ data }: UptimeChartProps) {
     timestamp: number;
     status: number;
     uptimeStatus: 'online' | 'offline' | 'unstable' | null;
-    hasData: boolean;
   }> = [];
 
   // Iterate through each 10-minute period from first to last
@@ -93,21 +92,20 @@ export function UptimeChart({ data }: UptimeChartProps) {
     const hours = periodDate.getHours().toString().padStart(2, '0');
     const minutes = periodDate.getMinutes().toString().padStart(2, '0');
     const formattedTime = `${hours}:${minutes}`;
-    
+
     const periodData = periodMap.get(currentPeriod);
-    
+
     if (periodData) {
       // Has data: determine if Online, Offline, or Unstable
       const allOnline = periodData.every(isOnline => isOnline);
       const allOffline = periodData.every(isOnline => !isOnline);
       const uptimeStatus: 'online' | 'offline' | 'unstable' = allOnline ? 'online' : (allOffline ? 'offline' : 'unstable');
-      
+
       chartData.push({
         time: formattedTime,
         timestamp: Math.floor(currentPeriod / 1000),
         status: 1,
         uptimeStatus: uptimeStatus,
-        hasData: true,
       });
     } else {
       // No data: height 0
@@ -116,23 +114,22 @@ export function UptimeChart({ data }: UptimeChartProps) {
         timestamp: Math.floor(currentPeriod / 1000),
         status: 0,
         uptimeStatus: null,
-        hasData: false,
       });
     }
   }
 
   // Color mapping
   const getBarColor = (entry: typeof chartData[0]) => {
-    if (!entry.hasData) {
-      return '#9ca3af'; // Gray for no data
-    }
     if (entry.uptimeStatus === 'online') {
       return '#22c55e'; // Green for Online
     }
     if (entry.uptimeStatus === 'offline') {
       return '#ef4444'; // Red for Offline
     }
-    return '#eab308'; // Yellow for Unstable (both online and offline)
+    if (entry.uptimeStatus === 'unstable') {
+      return '#eab308'; // Yellow for Unstable (both online and offline)
+    }
+    return '#9ca3af'; // Gray for no data (null case)
   };
 
   const handleEndChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -140,16 +137,16 @@ export function UptimeChart({ data }: UptimeChartProps) {
     // Round down to 10-minute boundary
     const roundedMinutes = Math.floor(newDate.getMinutes() / 10) * 10;
     const roundedDate = new Date(newDate.getFullYear(), newDate.getMonth(), newDate.getDate(),
-                                 newDate.getHours(), roundedMinutes, 0);
+      newDate.getHours(), roundedMinutes, 0);
     setEndPeriod(roundedDate);
   };
 
   return (
     <div>
-      <div style={{ 
-        marginBottom: '20px', 
-        display: 'flex', 
-        gap: '20px', 
+      <div style={{
+        marginBottom: '20px',
+        display: 'flex',
+        gap: '20px',
         alignItems: 'center',
         flexWrap: 'wrap'
       }}>
@@ -204,9 +201,9 @@ export function UptimeChart({ data }: UptimeChartProps) {
                   }}>
                     <p style={{ margin: '4px 0' }}>{`Time: ${formattedTime}`}</p>
                     <p style={{ margin: '4px 0' }}>
-                      {data.hasData 
-                        ? `Status: ${data.uptimeStatus === 'online' ? 'Online' : data.uptimeStatus === 'offline' ? 'Offline' : 'Unstable'}`
-                        : 'No data'}
+                      {data.uptimeStatus === null
+                        ? 'No data'
+                        : `Status: ${data.uptimeStatus === 'online' ? 'Online' : data.uptimeStatus === 'offline' ? 'Offline' : 'Unstable'}`}
                     </p>
                   </div>
                 );

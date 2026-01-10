@@ -6,6 +6,4 @@ export interface UptimeData {
 export interface ChartDataPoint {
   timestamp: number;
   success: boolean;
-  formattedTime: string;
-  date: Date;
 }
