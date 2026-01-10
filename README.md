@@ -4,6 +4,8 @@
 
 A simple tool to monitor server uptime by continuously pinging a target IP address and visualizing the results in a web dashboard.
 
+![Server Uptime Monitor Dashboard](screenshot.png)
+
 ## Technologies Used
 
 - **Frontend**: React with TypeScript
