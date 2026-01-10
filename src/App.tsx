@@ -14,14 +14,6 @@ function App() {
     setFileKey(newFileKey);
   }, []);
 
-  const handleLoadingChange = useCallback((isLoading: boolean) => {
-    setLoading(isLoading);
-  }, []);
-
-  const handleErrorChange = useCallback((errorMessage: string | null) => {
-    setError(errorMessage);
-  }, []);
-
   return (
     <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
       <h1 style={{ textAlign: 'center', marginBottom: '30px' }}>
@@ -30,8 +22,8 @@ function App() {
 
       <ChartSelector
         onDataChange={handleDataChange}
-        onLoadingChange={handleLoadingChange}
-        onErrorChange={handleErrorChange}
+        onLoadingChange={setLoading}
+        onErrorChange={setError}
       />
 
       {loading && <p style={{ textAlign: 'center' }}>Loading data...</p>}
