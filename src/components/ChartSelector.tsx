@@ -77,30 +77,30 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
     <div style={{
       marginBottom: '20px',
       display: 'flex',
-      justifyContent: 'center',
+      gap: '20px',
       alignItems: 'center',
-      gap: '10px'
+      flexWrap: 'wrap'
     }}>
-      <label style={{ fontSize: '14px', fontWeight: 'bold' }}>
-        Select Data File:
+      <label style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+        <span style={{ fontSize: '14px', fontWeight: 'bold' }}>Select Data File:</span>
+        <select
+          value={selectedFile}
+          onChange={handleFileChange}
+          style={{
+            padding: '8px',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            fontSize: '14px',
+            minWidth: '200px'
+          }}
+        >
+          {availableFiles.map(file => (
+            <option key={file.filename} value={file.filename}>
+              {file.displayName}
+            </option>
+          ))}
+        </select>
       </label>
-      <select
-        value={selectedFile}
-        onChange={handleFileChange}
-        style={{
-          padding: '8px 12px',
-          border: '1px solid #ccc',
-          borderRadius: '4px',
-          fontSize: '14px',
-          minWidth: '200px'
-        }}
-      >
-        {availableFiles.map(file => (
-          <option key={file.filename} value={file.filename}>
-            {file.displayName}
-          </option>
-        ))}
-      </select>
     </div>
   );
 }
