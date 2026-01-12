@@ -1,0 +1,20 @@
+{
+  "files": [
+    {
+      "path": "bombitapp_2.csv",
+      "displayName": "bombitapp_2"
+    },
+    {
+      "path": "bombitapp.csv",
+      "displayName": "bombitapp"
+    },
+    {
+      "path": "test_2.csv",
+      "displayName": "test_2"
+    },
+    {
+      "path": "test.csv",
+      "displayName": "test"
+    }
+  ]
+}

@@ -1,9 +1,11 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { parseCSV } from '../utils/csvParser';
 import { ChartDataPoint } from '../types';
 
-// Import all CSV files from the data folder
-const csvFiles = import.meta.glob('../data/*.csv', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+interface FileInfo {
+  path: string;
+  displayName: string;
+}
 
 interface ChartSelectorProps {
   onDataChange: (data: ChartDataPoint[], fileKey: number) => void;
@@ -11,45 +13,62 @@ interface ChartSelectorProps {
   onErrorChange: (error: string | null) => void;
 }
 
-export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: ChartSelectorProps) {
-  // Extract filenames from the imported files
-  const availableFiles = useMemo(() => {
-    return Object.keys(csvFiles).map(path => {
-      const filename = path.replace('../data/', '').replace('?raw', '');
-      const displayName = filename.replace('.csv', '');
-      return {
-        filename,
-        displayName,
-        path,
-        content: csvFiles[path]
-      };
-    });
-  }, []);
+// Get base path from import.meta.env.BASE_URL (set by Vite)
+const BASE_URL = import.meta.env.BASE_URL || '/';
 
+export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: ChartSelectorProps) {
+  const [availableFiles, setAvailableFiles] = useState<FileInfo[]>([]);
   const [selectedFile, setSelectedFile] = useState<string>('');
   const fileKeyRef = useRef(0); // Key to force chart reset
 
-  // Set initial file when availableFiles are loaded
+  // Fetch manifest to get list of available files
   useEffect(() => {
-    if (availableFiles.length > 0 && !selectedFile) {
-      setSelectedFile(availableFiles[0].filename);
-    }
-  }, [availableFiles, selectedFile]);
-
-  // Parse and transform data when selectedFile changes
-  useEffect(() => {
-    const loadData = () => {
+    const loadManifest = async () => {
       try {
         onLoadingChange(true);
-        const selectedFileData = availableFiles.find(f => f.filename === selectedFile);
+        const manifestUrl = `${BASE_URL}data/manifest.json`;
+        const response = await fetch(manifestUrl);
 
-        if (!selectedFileData) {
-          throw new Error('Selected file not found');
+        if (!response.ok) {
+          throw new Error('Failed to load file manifest');
         }
 
-        const chartData: ChartDataPoint[] = parseCSV(selectedFileData.content);
+        const manifest = await response.json();
+        setAvailableFiles(manifest.files || []);
 
-        // Increment fileKey and pass to parent
+        // Set initial file
+        if (manifest.files && manifest.files.length > 0) {
+          setSelectedFile(manifest.files[0].path);
+        }
+      } catch (err) {
+        onErrorChange(err instanceof Error ? err.message : 'Failed to load file list');
+      } finally {
+        onLoadingChange(false);
+      }
+    };
+
+    loadManifest();
+  }, [onLoadingChange, onErrorChange]);
+
+  // Fetch and parse CSV when selectedFile changes
+  useEffect(() => {
+    const loadData = async () => {
+      if (!selectedFile) return;
+
+      try {
+        onLoadingChange(true);
+
+        // Fetch CSV file
+        const fileUrl = `${BASE_URL}data/${selectedFile}`;
+        const response = await fetch(fileUrl);
+
+        if (!response.ok) {
+          throw new Error(`Failed to load file: ${selectedFile}`);
+        }
+
+        const csvContent = await response.text();
+        const chartData: ChartDataPoint[] = parseCSV(csvContent);
+
         fileKeyRef.current += 1;
         onDataChange(chartData, fileKeyRef.current);
         onErrorChange(null);
@@ -60,17 +79,15 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
       }
     };
 
-    if (selectedFile && availableFiles.length > 0) {
-      loadData();
-    }
-  }, [selectedFile, availableFiles, onDataChange, onLoadingChange, onErrorChange]);
+    loadData();
+  }, [selectedFile, onDataChange, onLoadingChange, onErrorChange]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedFile(e.target.value);
   };
 
   if (availableFiles.length === 0) {
-    return null;
+    return <p style={{ textAlign: 'center' }}>Loading file list...</p>;
   }
 
   return (
@@ -95,7 +112,7 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
           }}
         >
           {availableFiles.map(file => (
-            <option key={file.filename} value={file.filename}>
+            <option key={file.path} value={file.path}>
               {file.displayName}
             </option>
           ))}
