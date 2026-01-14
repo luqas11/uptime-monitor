@@ -31,16 +31,6 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
 
         const manifest: Manifest = await response.json();
         setTargets(manifest.targets || []);
-
-        // Set initial target and date
-        if (manifest.targets && manifest.targets.length > 0) {
-          const firstTarget = manifest.targets[0];
-          setSelectedTarget(firstTarget.name);
-          if (firstTarget.dates && firstTarget.dates.length > 0) {
-            // Select the most recent date (last in sorted array)
-            setSelectedDate(firstTarget.dates[firstTarget.dates.length - 1]);
-          }
-        }
       } catch (err) {
         onErrorChange(err instanceof Error ? err.message : 'Failed to load file list');
       } finally {
@@ -53,21 +43,19 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
 
   // Reset date selection when target changes
   useEffect(() => {
-    if (!selectedTarget) return;
-
-    const target = targets.find(t => t.name === selectedTarget);
-    if (target && target.dates && target.dates.length > 0) {
-      // Select the most recent date (last in sorted array)
-      setSelectedDate(target.dates[target.dates.length - 1]);
-    } else {
-      setSelectedDate('');
-    }
-  }, [selectedTarget, targets]);
+    setSelectedDate('');
+  }, [selectedTarget]);
 
   // Fetch and parse CSV when both target and date are selected
   useEffect(() => {
     const loadData = async () => {
-      if (!selectedTarget || !selectedDate) return;
+      if (!selectedTarget) return;
+
+      if (!selectedDate) {
+        fileKeyRef.current += 1;
+        onDataChange([], fileKeyRef.current);
+        onErrorChange(null);
+      }
 
       try {
         onLoadingChange(true);
@@ -153,13 +141,16 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
             fontSize: '0.9375rem',
             fontFamily: 'inherit',
             backgroundColor: 'white',
-            color: 'var(--color-text-primary)',
+            color: selectedTarget ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
             cursor: 'pointer',
             transition: 'all var(--transition-base)',
             outline: 'none',
             width: '100%'
           }}
         >
+          <option value="" disabled>
+            Select a target...
+          </option>
           {targets.map(target => (
             <option key={target.name} value={target.name}>
               {target.name}
@@ -186,21 +177,24 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
         <select
           value={selectedDate}
           onChange={handleDateChange}
-          disabled={availableDates.length === 0}
+          disabled={!selectedTarget || availableDates.length === 0}
           style={{
             padding: 'var(--spacing-3) var(--spacing-3)',
             border: '1px solid var(--color-neutral-300)',
             borderRadius: 'var(--radius-md)',
             fontSize: '0.9375rem',
             fontFamily: 'inherit',
-            backgroundColor: availableDates.length === 0 ? 'var(--color-neutral-100)' : 'white',
-            color: availableDates.length === 0 ? 'var(--color-neutral-500)' : 'var(--color-text-primary)',
-            cursor: availableDates.length === 0 ? 'not-allowed' : 'pointer',
+            backgroundColor: (!selectedTarget || availableDates.length === 0) ? 'var(--color-neutral-100)' : 'white',
+            color: (!selectedTarget || availableDates.length === 0) ? 'var(--color-neutral-500)' : (selectedDate ? 'var(--color-text-primary)' : 'var(--color-text-secondary)'),
+            cursor: (!selectedTarget || availableDates.length === 0) ? 'not-allowed' : 'pointer',
             transition: 'all var(--transition-base)',
             outline: 'none',
             width: '100%'
           }}
         >
+          <option value="" disabled>
+            {!selectedTarget ? 'Select a target first...' : 'Select a date...'}
+          </option>
           {availableDates.map(date => (
             <option key={date} value={date}>
               {date}
