@@ -41,21 +41,10 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
     loadManifest();
   }, [onLoadingChange, onErrorChange]);
 
-  // Reset date selection when target changes
-  useEffect(() => {
-    setSelectedDate('');
-  }, [selectedTarget]);
-
   // Fetch and parse CSV when both target and date are selected
   useEffect(() => {
     const loadData = async () => {
-      if (!selectedTarget) return;
-
-      if (!selectedDate) {
-        fileKeyRef.current += 1;
-        onDataChange([], fileKeyRef.current);
-        onErrorChange(null);
-      }
+      if (!selectedTarget || !selectedDate) return;
 
       try {
         onLoadingChange(true);
@@ -86,6 +75,9 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
 
   const handleTargetChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedTarget(e.target.value);
+    setSelectedDate('');
+    fileKeyRef.current += 1;
+    onDataChange([], fileKeyRef.current);
   };
 
   const handleDateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
