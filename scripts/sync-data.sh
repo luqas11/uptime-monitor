@@ -2,7 +2,7 @@
 
 # Script to sync monitoring data to git repository
 # Pulls latest changes, adds data files, commits and pushes
-# Designed to run daily via cron job
+# Designed to run hourly via cron job
 # Usage: ./scripts/sync-data.sh
 
 # Pull latest changes
@@ -12,8 +12,7 @@ git pull
 git add data/
 
 # Generate commit message with current date
-COMMIT_DATE=$(date +"%Y-%m-%d %H:%M:%S")
-COMMIT_MESSAGE="Update monitoring data - $COMMIT_DATE"
+COMMIT_MESSAGE="Update monitoring data - $(date +"%Y-%m-%d %H:%M")"
 
 # Commit the changes
 git commit -m "$COMMIT_MESSAGE"

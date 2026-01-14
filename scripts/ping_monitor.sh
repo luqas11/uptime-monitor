@@ -1,9 +1,11 @@
 #!/bin/bash
 
-# Script to ping an IP address every 60 seconds and log results to daily CSV files
-# Usage: ./ping_monitor.sh <IP_ADDRESS> <TARGET_NAME> [loop]
-# Example: ./ping_monitor.sh 192.168.1.1 server1 loop
-#          ./ping_monitor.sh 192.168.1.1 server1 (pings once and exits)
+# Script to ping an IP address and log results to daily CSV files
+# Designed to be run every minute by a cron job. Optionally can be run in loop mode
+# if cron jobs are not available.
+# Usage: ./ping_monitor.sh <TARGET_NAME> <IP_ADDRESS> [loop]
+# Example: ./ping_monitor.sh server1 192.168.1.1 (for cron: runs once and exits)
+#          ./ping_monitor.sh server1 192.168.1.1 loop (continuous loop mode)
 
 # Function to validate IPv4 address
 validate_ip() {
@@ -40,27 +42,17 @@ validate_target_name() {
 # Check if arguments are provided
 if [ $# -lt 2 ]; then
     echo "Error: Missing arguments" >&2
-    echo "Usage: $0 <IP_ADDRESS> <TARGET_NAME> [loop]" >&2
-    echo "Example: $0 192.168.1.1 server1 loop" >&2
-    echo "         $0 192.168.1.1 server1 (pings once and exits)" >&2
+    echo "Usage: $0 <TARGET_NAME> <IP_ADDRESS> [loop]" >&2
+    echo "Example: $0 server1 192.168.1.1 (for cron: runs once and exits)" >&2
+    echo "         $0 server1 192.168.1.1 loop (continuous loop mode)" >&2
     exit 1
 fi
 
 # Get third argument (optional)
 MODE="${3:-}"
 
-# Get IP address from first argument
-IP=$(echo "$1" | tr -d '[:space:]')
-
-# Validate IP address
-if ! validate_ip "$IP"; then
-    echo "Error: Invalid IPv4 address: $IP" >&2
-    echo "Please provide a valid IPv4 address (e.g., 192.168.1.1)" >&2
-    exit 1
-fi
-
-# Get target name from second argument
-TARGET_NAME=$(echo "$2" | tr -d '[:space:]')
+# Get target name from first argument
+TARGET_NAME=$(echo "$1" | tr -d '[:space:]')
 
 # Validate target name
 if ! validate_target_name "$TARGET_NAME"; then
@@ -69,8 +61,18 @@ if ! validate_target_name "$TARGET_NAME"; then
     exit 1
 fi
 
+# Get IP address from second argument
+IP=$(echo "$2" | tr -d '[:space:]')
+
+# Validate IP address
+if ! validate_ip "$IP"; then
+    echo "Error: Invalid IPv4 address: $IP" >&2
+    echo "Please provide a valid IPv4 address (e.g., 192.168.1.1)" >&2
+    exit 1
+fi
+
 # Define target directory
-TARGET_DIR="../data/${TARGET_NAME}"
+TARGET_DIR="./data/${TARGET_NAME}"
 
 # Ensure the target directory exists
 mkdir -p "$TARGET_DIR"

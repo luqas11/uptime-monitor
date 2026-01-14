@@ -2,6 +2,7 @@
 
 # Script to cleanup old data files from the data folder
 # Deletes CSV files older than 90 days based on filename date (YYYY-MM-DD.csv)
+# Designed to run daily via cron job
 # Usage: ./scripts/cleanup-old-data.sh
 
 DATA_DIR="./data"
