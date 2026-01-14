@@ -7,10 +7,6 @@ interface UptimeChartProps {
 }
 
 export function UptimeChart({ data }: UptimeChartProps) {
-  if (data.length === 0) {
-    return <div>No data available</div>;
-  }
-
   // Calculate the date from the first data point and show the full 24-hour period of that day
   const { startPeriod, endPeriod } = useMemo(() => {
     const firstTimestamp = data[0].timestamp;
@@ -84,24 +80,27 @@ export function UptimeChart({ data }: UptimeChartProps) {
     }
   }
 
-  // Color mapping
+  // Color mapping using CSS variables
   const getBarColor = (entry: typeof chartData[0]) => {
     if (entry.uptimeStatus === 'online') {
-      return '#22c55e'; // Green for Online
+      return 'var(--color-success)';
     }
     if (entry.uptimeStatus === 'offline') {
-      return '#ef4444'; // Red for Offline
+      return 'var(--color-error)';
     }
     if (entry.uptimeStatus === 'unstable') {
-      return '#eab308'; // Yellow for Unstable (both online and offline)
+      return 'var(--color-warning)';
     }
-    return '#9ca3af'; // Gray for no data (null case)
+    return 'var(--color-neutral-400)'; // Gray for no data
   };
 
   return (
-    <div>
+    <div className="card" style={{
+      marginTop: 'var(--spacing-6)',
+      padding: 'var(--spacing-6)'
+    }}>
       <ResponsiveContainer width="100%" height={400}>
-        <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+        <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 70 }} >
           <XAxis
             dataKey="time"
             angle={-45}
@@ -118,26 +117,58 @@ export function UptimeChart({ data }: UptimeChartProps) {
               if (active && payload && payload.length) {
                 const data = payload[0].payload;
                 const date = new Date(data.timestamp * 1000);
-                const day = String(date.getDate()).padStart(2, '0');
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const year = date.getFullYear();
-                const hours = String(date.getHours()).padStart(2, '0');
-                const minutes = String(date.getMinutes()).padStart(2, '0');
-                const formattedTime = `${day}/${month}/${year} ${hours}:${minutes}`;
+                const formattedTime = date.toLocaleString('es-AR', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false
+                });
+
+                const statusColor = data.uptimeStatus === 'online'
+                  ? 'var(--color-success)'
+                  : data.uptimeStatus === 'offline'
+                    ? 'var(--color-error)'
+                    : data.uptimeStatus === 'unstable'
+                      ? 'var(--color-warning)'
+                      : 'var(--color-neutral-400)';
+
                 return (
                   <div style={{
-                    backgroundColor: 'white',
-                    color: '#213547',
-                    padding: '10px',
-                    border: '1px solid #ccc',
-                    borderRadius: '4px'
+                    backgroundColor: 'var(--tooltip-bg, white)',
+                    color: 'var(--color-text-primary)',
+                    padding: 'var(--spacing-3) var(--spacing-4)',
+                    border: '1px solid var(--color-neutral-300)',
+                    borderRadius: 'var(--radius-md)',
+                    boxShadow: 'var(--shadow-lg)',
+                    fontSize: '0.875rem'
                   }}>
-                    <p style={{ margin: '4px 0' }}>{`Time: ${formattedTime}`}</p>
-                    <p style={{ margin: '4px 0' }}>
-                      {data.uptimeStatus === null
-                        ? 'No data'
-                        : `Status: ${data.uptimeStatus === 'online' ? 'Online' : data.uptimeStatus === 'offline' ? 'Offline' : 'Unstable'}`}
-                    </p>
+                    <div style={{
+                      marginBottom: 'var(--spacing-2)',
+                      fontWeight: 500,
+                      color: 'var(--color-text-primary)'
+                    }}>
+                      {formattedTime}
+                    </div>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'var(--spacing-2)'
+                    }}>
+                      <div style={{
+                        width: '10px',
+                        height: '10px',
+                        borderRadius: '50%',
+                        backgroundColor: statusColor
+                      }}></div>
+                      <span style={{ color: 'var(--color-text-secondary)' }}>
+                        {data.uptimeStatus === null
+                          ? 'No data'
+                          : data.uptimeStatus === 'online'
+                            ? 'Online'
+                            : data.uptimeStatus === 'offline'
+                              ? 'Offline'
+                              : 'Unstable'}
+                      </span>
+                    </div>
                   </div>
                 );
               }
