@@ -16,7 +16,7 @@ function isValidDate(dateString) {
 }
 
 async function generateManifest() {
-    const dataDir = join(__dirname, '..', 'public', 'data');
+    const dataDir = join(__dirname, '..', 'data');
     const targets = [];
 
     // Ensure data directory exists

@@ -4,14 +4,8 @@
 # Deletes CSV files older than 90 days based on filename date (YYYY-MM-DD.csv)
 # Usage: ./scripts/cleanup-old-data.sh
 
-DATA_DIR="./public/data"
+DATA_DIR="./data"
 DAYS=90
-
-# Check if data directory exists
-if [ ! -d "$DATA_DIR" ]; then
-  echo "Error: Data directory '$DATA_DIR' does not exist"
-  exit 1
-fi
 
 # Calculate cutoff date (90 days ago)
 CUTOFF_DATE=$(date -d "$DAYS days ago" +%Y-%m-%d 2>/dev/null)

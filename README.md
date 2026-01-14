@@ -36,7 +36,7 @@ A simple tool to monitor server uptime by continuously pinging a target IP addre
    
    This will:
    - Ping the specified IP address every 60 seconds
-   - Create a folder for the target (e.g., `public/data/server1/`)
+   - Create a folder for the target (e.g., `data/server1/`)
    - Automatically create daily CSV files (e.g., `2026-01-09.csv`)
    - Automatically switch to a new daily file when the day rolls over at midnight
 
@@ -64,14 +64,13 @@ A simple tool to monitor server uptime by continuously pinging a target IP addre
 
 3. **Open your browser** and navigate to the local development URL (usually `http://localhost:5173`)
 
-4. **View the data**: The dashboard will automatically load and display the ping results
+4. **View the data**: The dashboard will automatically load and display the ping results from the GitHub repository
 
 ### Using the Dashboard
 
 - **Target Selection**: Use the first dropdown to select which target to visualize (e.g., `server1`, `google_dns`)
-- **Date Selection**: Use the second dropdown to select which day's data to view (dates are automatically detected from available files)
-- **Time Range Selection**: Use the "End Time" selector to choose the end of the 24-hour window you want to view (the chart always displays exactly 24 hours of data)
-- **Default View**: Shows the last 24 hours before the most recent data point for the selected date
+- **Date Selection**: Use the second dropdown to select which day's data to view (dates are automatically detected from available files in the GitHub repository)
+- **Chart Display**: The chart displays the full 24-hour period for the selected date
 - **Bar Chart**: 
   - Green bars indicate periods where all pings were successful (server was online)
   - Red bars indicate periods where all pings failed (server was offline)
@@ -97,11 +96,11 @@ timestamp,success
 ```
 
 **Data Organization**:
-- Each target (monitored IP) has its own folder in `public/data/`
+- Each target (monitored IP) has its own folder in `data/`
 - Daily files are automatically created with the format `YYYY-MM-DD.csv`
 - Example structure:
   ```
-  public/data/
+  data/
   ├── server1/
   │   ├── 2026-01-08.csv
   │   └── 2026-01-09.csv
@@ -110,7 +109,7 @@ timestamp,success
       └── 2026-01-10.csv
   ```
 
-All targets and dates are automatically detected and available in the dashboard selectors.
+The dashboard fetches data directly from the GitHub repository using raw content URLs. All targets and dates are automatically detected from the manifest file.
 
 ## Deployment
 

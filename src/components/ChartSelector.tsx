@@ -8,8 +8,8 @@ interface ChartSelectorProps {
   onErrorChange: (error: string | null) => void;
 }
 
-// Get base path from import.meta.env.BASE_URL (set by Vite)
-const BASE_URL = import.meta.env.BASE_URL || '/';
+// GitHub raw content base URL
+const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/luqas11/uptime-monitor/refs/heads/main/data';
 
 export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: ChartSelectorProps) {
   const [targets, setTargets] = useState<TargetInfo[]>([]);
@@ -22,7 +22,7 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
     const loadManifest = async () => {
       try {
         onLoadingChange(true);
-        const manifestUrl = `${BASE_URL}data/manifest.json`;
+        const manifestUrl = `${GITHUB_RAW_BASE}/manifest.json`;
         const response = await fetch(manifestUrl);
 
         if (!response.ok) {
@@ -50,7 +50,7 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
         onLoadingChange(true);
 
         // Fetch CSV file
-        const fileUrl = `${BASE_URL}data/${selectedTarget}/${selectedDate}.csv`;
+        const fileUrl = `${GITHUB_RAW_BASE}/${selectedTarget}/${selectedDate}.csv`;
         const response = await fetch(fileUrl);
 
         if (!response.ok) {

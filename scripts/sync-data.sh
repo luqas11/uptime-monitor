@@ -9,7 +9,7 @@
 git pull
 
 # Add all files in the data folder
-git add public/data/
+git add data/
 
 # Generate commit message with current date
 COMMIT_DATE=$(date +"%Y-%m-%d %H:%M:%S")
