@@ -2,7 +2,7 @@
 
 > **Note**: This project was built entirely using the [Cursor](https://cursor.com) AI agent, made to test the AI development process on a simple project.  
 
-A simple tool to monitor server uptime by continuously pinging a target IP address and visualizing the results in a web dashboard.
+A simple tool to monitor server uptime by pinging target IP addresses and visualizing the results in a web dashboard. Designed to run via cron jobs for automated monitoring.
 
 ![Server Uptime Monitor Dashboard](screenshot.png)
 
@@ -24,31 +24,49 @@ A simple tool to monitor server uptime by continuously pinging a target IP addre
    cd uptime-monitor
    ```
 
-2. **Run the monitoring script** with IP address and target name as arguments:
+2. **Set up cron jobs** for automated monitoring. The project requires three cron jobs to run automatically:
+
+   **a. Ping Monitor** (run every minute):
    ```bash
-   bash scripts/ping_monitor.sh <IP_ADDRESS> <TARGET_NAME>
+   * * * * * /path/to/uptime-monitor/scripts/ping_monitor.sh <TARGET_NAME> <IP_ADDRESS>
    ```
-   
-   **Example**:
+   Example:
    ```bash
-   bash scripts/ping_monitor.sh 192.168.1.1 server1
+   * * * * * /home/user/uptime-monitor/scripts/ping_monitor.sh server1 192.168.1.1
    ```
-   
-   This will:
-   - Ping the specified IP address every 60 seconds
-   - Create a folder for the target (e.g., `data/server1/`)
-   - Automatically create daily CSV files (e.g., `2026-01-09.csv`)
-   - Automatically switch to a new daily file when the day rolls over at midnight
+   This will ping the specified IP address once per minute and log the result to daily CSV files.
+
+   **b. Data Sync** (run hourly):
+   ```bash
+   0 * * * * /path/to/uptime-monitor/scripts/sync-data.sh
+   ```
+   This script pulls latest changes, adds data files, commits and pushes to the repository.
+
+   **c. Data Cleanup** (run daily):
+   ```bash
+   0 2 * * * /path/to/uptime-monitor/scripts/cleanup-old-data.sh
+   ```
+   This script deletes CSV files older than 90 days based on filename date.
+
+   **Important**: 
+   - Use absolute paths in your crontab
+   - Ensure scripts are executable: `chmod +x scripts/*.sh`
+   - Edit your crontab with: `crontab -e`
 
 3. **Target naming rules**: The target name can only contain letters, numbers and underscores.
 
-4. **Multiple monitors**: You can run multiple instances of the script simultaneously to monitor different IPs:
+4. **Multiple monitors**: Set up separate cron jobs for each target you want to monitor:
    ```bash
-   bash scripts/ping_monitor.sh 192.168.1.1 server1
-   bash scripts/ping_monitor.sh 8.8.8.8 google_dns
+   * * * * * /path/to/uptime-monitor/scripts/ping_monitor.sh server1 192.168.1.1
+   * * * * * /path/to/uptime-monitor/scripts/ping_monitor.sh google_dns 8.8.8.8
    ```
-   
    Each target will have its own folder with separate daily files.
+
+5. **Testing and Development**: For testing purposes or when cron jobs are not available, you can use loop mode:
+   ```bash
+   bash scripts/ping_monitor.sh server1 192.168.1.1 loop
+   ```
+   This will continuously ping every 60 seconds until stopped with `Ctrl+C`. Note that loop mode is intended for testing and development only; production use should rely on cron jobs.
 
 ### Viewing the Dashboard
 
@@ -76,10 +94,6 @@ A simple tool to monitor server uptime by continuously pinging a target IP addre
   - Red bars indicate periods where all pings failed (server was offline)
   - Yellow bars indicate periods with mixed results (unstable - both successful and failed pings)
   - Gray bars show periods with no data
-
-### Stopping the Monitor
-
-Press `Ctrl+C` in the terminal where the monitoring script is running to stop it gracefully.
 
 ## Data Format
 
