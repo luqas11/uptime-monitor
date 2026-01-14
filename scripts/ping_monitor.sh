@@ -1,8 +1,9 @@
 #!/bin/bash
 
 # Script to ping an IP address every 60 seconds and log results to daily CSV files
-# Usage: ./ping_monitor.sh <IP_ADDRESS> <TARGET_NAME>
-# Example: ./ping_monitor.sh 192.168.1.1 server1
+# Usage: ./ping_monitor.sh <IP_ADDRESS> <TARGET_NAME> [loop]
+# Example: ./ping_monitor.sh 192.168.1.1 server1 loop
+#          ./ping_monitor.sh 192.168.1.1 server1 (pings once and exits)
 
 # Function to validate IPv4 address
 validate_ip() {
@@ -39,10 +40,14 @@ validate_target_name() {
 # Check if arguments are provided
 if [ $# -lt 2 ]; then
     echo "Error: Missing arguments" >&2
-    echo "Usage: $0 <IP_ADDRESS> <TARGET_NAME>" >&2
-    echo "Example: $0 192.168.1.1 server1" >&2
+    echo "Usage: $0 <IP_ADDRESS> <TARGET_NAME> [loop]" >&2
+    echo "Example: $0 192.168.1.1 server1 loop" >&2
+    echo "         $0 192.168.1.1 server1 (pings once and exits)" >&2
     exit 1
 fi
+
+# Get third argument (optional)
+MODE="${3:-}"
 
 # Get IP address from first argument
 IP=$(echo "$1" | tr -d '[:space:]')
@@ -97,18 +102,25 @@ cleanup() {
     exit 0
 }
 
-# Set trap for Ctrl+C
-trap cleanup SIGINT SIGTERM
+# Set trap for Ctrl+C (only needed for loop mode)
+if [ "$MODE" = "loop" ]; then
+    trap cleanup SIGINT SIGTERM
+fi
 
 echo "Starting ping monitor for IP: $IP"
 echo "Target: $TARGET_NAME"
 echo "Results will be written to daily files in: $TARGET_DIR"
 echo "Current file: $(basename "$CSV_FILE")"
-echo "Press Ctrl+C to stop"
+if [ "$MODE" = "loop" ]; then
+    echo "Mode: Continuous loop"
+    echo "Press Ctrl+C to stop"
+else
+    echo "Mode: Single ping"
+fi
 echo ""
 
-# Main loop
-while true; do
+# Function to perform a single ping
+perform_ping() {
     # Check if date has changed (day rollover)
     NEW_DATE=$(get_current_date)
     if [ "$NEW_DATE" != "$CURRENT_DATE" ]; then
@@ -148,7 +160,17 @@ while true; do
     
     # Print to terminal with formatted timestamp
     echo "$READABLE_TIME - $SUCCESS"
-    
-    # Wait 60 seconds before next ping
-    sleep 60
-done
+}
+
+# Execute ping based on mode
+if [ "$MODE" = "loop" ]; then
+    # Main loop
+    while true; do
+        perform_ping
+        # Wait 60 seconds before next ping
+        sleep 60
+    done
+else
+    # Single ping
+    perform_ping
+fi
