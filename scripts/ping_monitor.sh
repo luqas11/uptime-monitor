@@ -65,7 +65,7 @@ if ! validate_target_name "$TARGET_NAME"; then
 fi
 
 # Define target directory
-TARGET_DIR="./public/data/${TARGET_NAME}"
+TARGET_DIR="../public/data/${TARGET_NAME}"
 
 # Ensure the target directory exists
 mkdir -p "$TARGET_DIR"
