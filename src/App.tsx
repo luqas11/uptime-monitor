@@ -1,15 +1,15 @@
 import { useState, useCallback } from 'react';
 import { UptimeChart } from './components/UptimeChart';
 import { ChartSelector } from './components/ChartSelector';
-import { ChartDataPoint } from './types';
+import { UptimeData } from './types';
 
 function App() {
-  const [data, setData] = useState<ChartDataPoint[]>([]);
+  const [data, setData] = useState<UptimeData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fileKey, setFileKey] = useState(0); // Key to force chart reset
 
-  const handleDataChange = useCallback((newData: ChartDataPoint[], newFileKey: number) => {
+  const handleDataChange = useCallback((newData: UptimeData[], newFileKey: number) => {
     setData(newData);
     setFileKey(newFileKey);
   }, []);

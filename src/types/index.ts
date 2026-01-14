@@ -3,11 +3,6 @@ export interface UptimeData {
   success: boolean;
 }
 
-export interface ChartDataPoint {
-  timestamp: number;
-  success: boolean;
-}
-
 export interface TargetInfo {
   name: string;
   dates: string[];

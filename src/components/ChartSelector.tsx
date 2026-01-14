@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { parseCSV } from '../utils/csvParser';
-import { ChartDataPoint, TargetInfo, Manifest } from '../types';
+import { UptimeData, TargetInfo, Manifest } from '../types';
 
 interface ChartSelectorProps {
-  onDataChange: (data: ChartDataPoint[], fileKey: number) => void;
+  onDataChange: (data: UptimeData[], fileKey: number) => void;
   onLoadingChange: (loading: boolean) => void;
   onErrorChange: (error: string | null) => void;
 }
@@ -58,7 +58,7 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
         }
 
         const csvContent = await response.text();
-        const chartData: ChartDataPoint[] = parseCSV(csvContent);
+        const chartData: UptimeData[] = parseCSV(csvContent);
 
         fileKeyRef.current += 1;
         onDataChange(chartData, fileKeyRef.current);

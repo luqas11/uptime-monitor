@@ -1,9 +1,9 @@
 import { useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
-import { ChartDataPoint } from '../types';
+import { UptimeData } from '../types';
 
 interface UptimeChartProps {
-  data: ChartDataPoint[];
+  data: UptimeData[];
 }
 
 export function UptimeChart({ data }: UptimeChartProps) {
