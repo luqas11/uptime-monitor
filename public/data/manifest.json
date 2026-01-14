@@ -1,20 +1,33 @@
 {
-  "files": [
+  "targets": [
     {
-      "path": "bombitapp_2.csv",
-      "displayName": "bombitapp_2"
+      "name": "bombitapp_1",
+      "dates": [
+        "2026-01-08",
+        "2026-01-09",
+        "2026-01-13"
+      ]
     },
     {
-      "path": "bombitapp.csv",
-      "displayName": "bombitapp"
+      "name": "bombitapp_2",
+      "dates": [
+        "2026-01-09",
+        "2026-01-10"
+      ]
     },
     {
-      "path": "test_2.csv",
-      "displayName": "test_2"
+      "name": "test_1",
+      "dates": [
+        "2026-01-08",
+        "2026-01-09"
+      ]
     },
     {
-      "path": "test.csv",
-      "displayName": "test"
+      "name": "test_2",
+      "dates": [
+        "2026-01-09",
+        "2026-01-10"
+      ]
     }
   ]
 }

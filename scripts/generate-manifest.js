@@ -5,9 +5,19 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Function to validate date format (YYYY-MM-DD)
+function isValidDate(dateString) {
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(dateString)) {
+        return false;
+    }
+    const date = new Date(dateString);
+    return date instanceof Date && !isNaN(date) && dateString === date.toISOString().split('T')[0];
+}
+
 async function generateManifest() {
     const dataDir = join(__dirname, '..', 'public', 'data');
-    const files = [];
+    const targets = [];
 
     // Ensure data directory exists
     try {
@@ -16,45 +26,65 @@ async function generateManifest() {
         // Directory might already exist, that's fine
     }
 
-    async function scanDir(dir, prefix = '') {
-        try {
-            const entries = await readdir(dir);
+    try {
+        const entries = await readdir(dataDir);
 
-            for (const entry of entries) {
-                // Skip manifest.json itself
-                if (entry === 'manifest.json') continue;
+        // Scan for target directories
+        for (const entry of entries) {
+            // Skip manifest.json itself
+            if (entry === 'manifest.json') continue;
 
-                const fullPath = join(dir, entry);
-                const stats = await stat(fullPath);
+            const targetPath = join(dataDir, entry);
+            const stats = await stat(targetPath);
 
-                if (stats.isDirectory()) {
-                    await scanDir(fullPath, join(prefix, entry));
-                } else if (entry.endsWith('.csv')) {
-                    const relativePath = join(prefix, entry).replace(/\\/g, '/');
-                    // Generate display name: remove .csv extension and replace / with " - "
-                    const displayName = relativePath.replace('.csv', '').replace(/\//g, ' - ');
-                    files.push({ path: relativePath, displayName });
+            // Only process directories (targets)
+            if (stats.isDirectory()) {
+                const dates = [];
+
+                // Scan target directory for CSV files
+                try {
+                    const targetEntries = await readdir(targetPath);
+
+                    for (const fileEntry of targetEntries) {
+                        if (fileEntry.endsWith('.csv')) {
+                            // Extract date from filename (YYYY-MM-DD.csv)
+                            const dateStr = fileEntry.replace('.csv', '');
+
+                            // Validate date format
+                            if (isValidDate(dateStr)) {
+                                dates.push(dateStr);
+                            }
+                        }
+                    }
+
+                    // Sort dates chronologically
+                    dates.sort();
+
+                    // Only add target if it has at least one valid date file
+                    if (dates.length > 0) {
+                        targets.push({
+                            name: entry,
+                            dates: dates
+                        });
+                    }
+                } catch (err) {
+                    console.error(`Error scanning target directory ${entry}:`, err.message);
                 }
             }
-        } catch (err) {
-            console.error(`Error scanning directory ${dir}:`, err.message);
         }
-    }
 
-    try {
-        await scanDir(dataDir);
+        // Sort targets alphabetically by name
+        targets.sort((a, b) => a.name.localeCompare(b.name));
 
-        // Sort files by path for consistent ordering
-        files.sort((a, b) => a.path.localeCompare(b.path));
-
-        const manifest = { files };
+        const manifest = { targets };
         const manifestPath = join(dataDir, 'manifest.json');
         await writeFile(
             manifestPath,
             JSON.stringify(manifest, null, 2)
         );
 
-        console.log(`✓ Generated manifest with ${files.length} file(s) at ${manifestPath}`);
+        const totalDates = targets.reduce((sum, target) => sum + target.dates.length, 0);
+        console.log(`✓ Generated manifest with ${targets.length} target(s) and ${totalDates} date file(s) at ${manifestPath}`);
     } catch (err) {
         console.error('Error generating manifest:', err.message);
         process.exit(1);

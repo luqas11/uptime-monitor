@@ -1,11 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { parseCSV } from '../utils/csvParser';
-import { ChartDataPoint } from '../types';
-
-interface FileInfo {
-  path: string;
-  displayName: string;
-}
+import { ChartDataPoint, TargetInfo, Manifest } from '../types';
 
 interface ChartSelectorProps {
   onDataChange: (data: ChartDataPoint[], fileKey: number) => void;
@@ -17,11 +12,12 @@ interface ChartSelectorProps {
 const BASE_URL = import.meta.env.BASE_URL || '/';
 
 export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: ChartSelectorProps) {
-  const [availableFiles, setAvailableFiles] = useState<FileInfo[]>([]);
-  const [selectedFile, setSelectedFile] = useState<string>('');
+  const [targets, setTargets] = useState<TargetInfo[]>([]);
+  const [selectedTarget, setSelectedTarget] = useState<string>('');
+  const [selectedDate, setSelectedDate] = useState<string>('');
   const fileKeyRef = useRef(0); // Key to force chart reset
 
-  // Fetch manifest to get list of available files
+  // Fetch manifest to get list of available targets
   useEffect(() => {
     const loadManifest = async () => {
       try {
@@ -33,12 +29,17 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
           throw new Error('Failed to load file manifest');
         }
 
-        const manifest = await response.json();
-        setAvailableFiles(manifest.files || []);
+        const manifest: Manifest = await response.json();
+        setTargets(manifest.targets || []);
 
-        // Set initial file
-        if (manifest.files && manifest.files.length > 0) {
-          setSelectedFile(manifest.files[0].path);
+        // Set initial target and date
+        if (manifest.targets && manifest.targets.length > 0) {
+          const firstTarget = manifest.targets[0];
+          setSelectedTarget(firstTarget.name);
+          if (firstTarget.dates && firstTarget.dates.length > 0) {
+            // Select the most recent date (last in sorted array)
+            setSelectedDate(firstTarget.dates[firstTarget.dates.length - 1]);
+          }
         }
       } catch (err) {
         onErrorChange(err instanceof Error ? err.message : 'Failed to load file list');
@@ -50,20 +51,33 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
     loadManifest();
   }, [onLoadingChange, onErrorChange]);
 
-  // Fetch and parse CSV when selectedFile changes
+  // Reset date selection when target changes
+  useEffect(() => {
+    if (!selectedTarget) return;
+
+    const target = targets.find(t => t.name === selectedTarget);
+    if (target && target.dates && target.dates.length > 0) {
+      // Select the most recent date (last in sorted array)
+      setSelectedDate(target.dates[target.dates.length - 1]);
+    } else {
+      setSelectedDate('');
+    }
+  }, [selectedTarget, targets]);
+
+  // Fetch and parse CSV when both target and date are selected
   useEffect(() => {
     const loadData = async () => {
-      if (!selectedFile) return;
+      if (!selectedTarget || !selectedDate) return;
 
       try {
         onLoadingChange(true);
 
         // Fetch CSV file
-        const fileUrl = `${BASE_URL}data/${selectedFile}`;
+        const fileUrl = `${BASE_URL}data/${selectedTarget}/${selectedDate}.csv`;
         const response = await fetch(fileUrl);
 
         if (!response.ok) {
-          throw new Error(`Failed to load file: ${selectedFile}`);
+          throw new Error(`Failed to load file: ${selectedTarget}/${selectedDate}.csv`);
         }
 
         const csvContent = await response.text();
@@ -80,14 +94,21 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
     };
 
     loadData();
-  }, [selectedFile, onDataChange, onLoadingChange, onErrorChange]);
+  }, [selectedTarget, selectedDate, onDataChange, onLoadingChange, onErrorChange]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedFile(e.target.value);
+  const handleTargetChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedTarget(e.target.value);
   };
 
-  if (availableFiles.length === 0) {
-    return <p style={{ textAlign: 'center' }}>Loading file list...</p>;
+  const handleDateChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedDate(e.target.value);
+  };
+
+  const selectedTargetInfo = targets.find(t => t.name === selectedTarget);
+  const availableDates = selectedTargetInfo?.dates || [];
+
+  if (targets.length === 0) {
+    return <p style={{ textAlign: 'center' }}>Loading targets...</p>;
   }
 
   return (
@@ -99,21 +120,44 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
       flexWrap: 'wrap'
     }}>
       <label style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-        <span style={{ fontSize: '14px', fontWeight: 'bold' }}>Select Data File:</span>
+        <span style={{ fontSize: '14px', fontWeight: 'bold' }}>Select Target:</span>
         <select
-          value={selectedFile}
-          onChange={handleFileChange}
+          value={selectedTarget}
+          onChange={handleTargetChange}
           style={{
             padding: '8px',
             border: '1px solid #ccc',
             borderRadius: '4px',
             fontSize: '14px',
-            minWidth: '200px'
+            width: '240px'
           }}
         >
-          {availableFiles.map(file => (
-            <option key={file.path} value={file.path}>
-              {file.displayName}
+          {targets.map(target => (
+            <option key={target.name} value={target.name}>
+              {target.name}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <label style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+        <span style={{ fontSize: '14px', fontWeight: 'bold' }}>Select Date:</span>
+        <select
+          value={selectedDate}
+          onChange={handleDateChange}
+          disabled={availableDates.length === 0}
+          style={{
+            padding: '8px',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            fontSize: '14px',
+            width: '240px',
+            opacity: availableDates.length === 0 ? 0.6 : 1
+          }}
+        >
+          {availableDates.map(date => (
+            <option key={date} value={date}>
+              {date}
             </option>
           ))}
         </select>

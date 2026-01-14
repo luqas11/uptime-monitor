@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Script to ping an IP address every 10 seconds and log results to CSV
-# Usage: ./ping_monitor.sh <IP_ADDRESS> <CSV_FILENAME>
+# Script to ping an IP address every 60 seconds and log results to daily CSV files
+# Usage: ./ping_monitor.sh <IP_ADDRESS> <TARGET_NAME>
 # Example: ./ping_monitor.sh 192.168.1.1 server1
 
 # Function to validate IPv4 address
@@ -24,8 +24,8 @@ validate_ip() {
     return 0
 }
 
-# Function to validate CSV filename (only letters, numbers, and underscores)
-validate_filename() {
+# Function to validate target name (only letters, numbers, and underscores)
+validate_target_name() {
     local name=$1
     
     # Check if name contains only uppercase letters, lowercase letters, numbers, or underscores
@@ -39,7 +39,7 @@ validate_filename() {
 # Check if arguments are provided
 if [ $# -lt 2 ]; then
     echo "Error: Missing arguments" >&2
-    echo "Usage: $0 <IP_ADDRESS> <CSV_FILENAME>" >&2
+    echo "Usage: $0 <IP_ADDRESS> <TARGET_NAME>" >&2
     echo "Example: $0 192.168.1.1 server1" >&2
     exit 1
 fi
@@ -54,21 +54,36 @@ if ! validate_ip "$IP"; then
     exit 1
 fi
 
-# Get CSV filename from second argument
-CSV_FILENAME=$(echo "$2" | tr -d '[:space:]')
+# Get target name from second argument
+TARGET_NAME=$(echo "$2" | tr -d '[:space:]')
 
-# Validate CSV filename
-if ! validate_filename "$CSV_FILENAME"; then
-    echo "Error: Invalid file name: $CSV_FILENAME" >&2
-    echo "File name can only contain uppercase letters, lowercase letters, numbers, or underscores." >&2
+# Validate target name
+if ! validate_target_name "$TARGET_NAME"; then
+    echo "Error: Invalid target name: $TARGET_NAME" >&2
+    echo "Target name can only contain uppercase letters, lowercase letters, numbers, or underscores." >&2
     exit 1
 fi
 
-# Define CSV file path (path and extension are hardcoded)
-CSV_FILE="./public/data/${CSV_FILENAME}.csv"
+# Define target directory
+TARGET_DIR="./public/data/${TARGET_NAME}"
 
-# Ensure the directory exists
-mkdir -p "$(dirname "$CSV_FILE")"
+# Ensure the target directory exists
+mkdir -p "$TARGET_DIR"
+
+# Function to get current date in YYYY-MM-DD format
+get_current_date() {
+    date +%Y-%m-%d
+}
+
+# Function to get CSV file path for a given date
+get_csv_file() {
+    local date=$1
+    echo "${TARGET_DIR}/${date}.csv"
+}
+
+# Initialize current date and CSV file
+CURRENT_DATE=$(get_current_date)
+CSV_FILE=$(get_csv_file "$CURRENT_DATE")
 
 # Initialize CSV file with header if it doesn't exist
 if [ ! -f "$CSV_FILE" ]; then
@@ -86,12 +101,28 @@ cleanup() {
 trap cleanup SIGINT SIGTERM
 
 echo "Starting ping monitor for IP: $IP"
-echo "Results will be written to $CSV_FILE"
+echo "Target: $TARGET_NAME"
+echo "Results will be written to daily files in: $TARGET_DIR"
+echo "Current file: $(basename "$CSV_FILE")"
 echo "Press Ctrl+C to stop"
 echo ""
 
 # Main loop
 while true; do
+    # Check if date has changed (day rollover)
+    NEW_DATE=$(get_current_date)
+    if [ "$NEW_DATE" != "$CURRENT_DATE" ]; then
+        echo ""
+        echo "Day rolled over. Switching to new file: ${NEW_DATE}.csv"
+        CURRENT_DATE="$NEW_DATE"
+        CSV_FILE=$(get_csv_file "$CURRENT_DATE")
+        
+        # Initialize new CSV file with header
+        if [ ! -f "$CSV_FILE" ]; then
+            echo "timestamp,success" > "$CSV_FILE"
+        fi
+    fi
+    
     # Get current UNIX timestamp
     TIMESTAMP=$(date +%s)
     

@@ -24,9 +24,9 @@ A simple tool to monitor server uptime by continuously pinging a target IP addre
    cd uptime-monitor
    ```
 
-2. **Run the monitoring script** with IP address and CSV filename as arguments:
+2. **Run the monitoring script** with IP address and target name as arguments:
    ```bash
-   bash ping_monitor.sh <IP_ADDRESS> <CSV_FILENAME>
+   bash ping_monitor.sh <IP_ADDRESS> <TARGET_NAME>
    ```
    
    **Example**:
@@ -36,15 +36,19 @@ A simple tool to monitor server uptime by continuously pinging a target IP addre
    
    This will:
    - Ping the specified IP address every 60 seconds
-   - Log results to `src/data/server1.csv`
+   - Create a folder for the target (e.g., `public/data/server1/`)
+   - Automatically create daily CSV files (e.g., `2026-01-09.csv`)
+   - Automatically switch to a new daily file when the day rolls over at midnight
 
-3. **File naming rules**: The CSV filename can only contain letters, numbers and underscores.
+3. **Target naming rules**: The target name can only contain letters, numbers and underscores.
 
 4. **Multiple monitors**: You can run multiple instances of the script simultaneously to monitor different IPs:
    ```bash
    bash ping_monitor.sh 192.168.1.1 server1
    bash ping_monitor.sh 8.8.8.8 google_dns
    ```
+   
+   Each target will have its own folder with separate daily files.
 
 ### Viewing the Dashboard
 
@@ -64,9 +68,10 @@ A simple tool to monitor server uptime by continuously pinging a target IP addre
 
 ### Using the Dashboard
 
-- **File Selection**: Use the dropdown menu to select which CSV file to visualize (all CSV files in `src/data/` are automatically detected)
+- **Target Selection**: Use the first dropdown to select which target to visualize (e.g., `server1`, `google_dns`)
+- **Date Selection**: Use the second dropdown to select which day's data to view (dates are automatically detected from available files)
 - **Time Range Selection**: Use the "End Time" selector to choose the end of the 24-hour window you want to view (the chart always displays exactly 24 hours of data)
-- **Default View**: Shows the last 24 hours before the most recent data point
+- **Default View**: Shows the last 24 hours before the most recent data point for the selected date
 - **Bar Chart**: 
   - Green bars indicate periods where all pings were successful (server was online)
   - Red bars indicate periods where all pings failed (server was offline)
@@ -79,7 +84,7 @@ Press `Ctrl+C` in the terminal where the monitoring script is running to stop it
 
 ## Data Format
 
-All CSV files in `src/data/` follow the same format with two columns:
+All CSV files follow the same format with two columns:
 - `timestamp`: UNIX timestamp (seconds since epoch)
 - `success`: `true` if ping was successful, `false` if it failed
 
@@ -91,7 +96,21 @@ timestamp,success
 1703123576,true
 ```
 
-You can create multiple CSV files to monitor different servers or IP addresses. All files will be automatically available in the dashboard's file selector.
+**Data Organization**:
+- Each target (monitored IP) has its own folder in `public/data/`
+- Daily files are automatically created with the format `YYYY-MM-DD.csv`
+- Example structure:
+  ```
+  public/data/
+  ├── server1/
+  │   ├── 2026-01-08.csv
+  │   └── 2026-01-09.csv
+  └── google_dns/
+      ├── 2026-01-09.csv
+      └── 2026-01-10.csv
+  ```
+
+All targets and dates are automatically detected and available in the dashboard selectors.
 
 ## Deployment
 
