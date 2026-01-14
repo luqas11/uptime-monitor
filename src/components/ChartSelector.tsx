@@ -89,55 +89,24 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
 
   if (targets.length === 0) {
     return (
-      <div style={{
-        textAlign: 'center',
-        padding: 'var(--spacing-6)',
-        color: 'var(--color-text-secondary)'
-      }}>
+      <div className="chart-selector-loading">
         <span style={{ fontSize: '0.95rem' }}>Loading targets...</span>
       </div>
     );
   }
 
   return (
-    <div className="card" style={{
-      marginBottom: 'var(--spacing-6)',
-      display: 'flex',
-      gap: 'var(--spacing-5)',
-      alignItems: 'flex-end',
-      flexWrap: 'wrap',
-      padding: 'var(--spacing-5)'
-    }}>
-      <label style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 'var(--spacing-2)',
-        flex: '1 1 240px',
-        minWidth: '200px'
-      }}>
-        <span style={{
-          fontSize: '0.875rem',
-          fontWeight: 600,
-          color: 'var(--color-text-primary)',
-          letterSpacing: '0.01em'
-        }}>
+    <div className="card chart-selector-container">
+      <label className="chart-selector-label">
+        <span className="chart-selector-label-text">
           Select Target
         </span>
         <select
           value={selectedTarget}
           onChange={handleTargetChange}
+          className="chart-selector-select"
           style={{
-            padding: 'var(--spacing-3) var(--spacing-3)',
-            border: '1px solid var(--color-neutral-300)',
-            borderRadius: 'var(--radius-md)',
-            fontSize: '0.9375rem',
-            fontFamily: 'inherit',
-            backgroundColor: 'white',
-            color: selectedTarget ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
-            cursor: 'pointer',
-            transition: 'all var(--transition-base)',
-            outline: 'none',
-            width: '100%'
+            color: selectedTarget ? 'var(--color-text-primary)' : 'var(--color-text-secondary)'
           }}
         >
           <option value="" disabled>
@@ -151,37 +120,18 @@ export function ChartSelector({ onDataChange, onLoadingChange, onErrorChange }: 
         </select>
       </label>
 
-      <label style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 'var(--spacing-2)',
-        flex: '1 1 240px',
-        minWidth: '200px'
-      }}>
-        <span style={{
-          fontSize: '0.875rem',
-          fontWeight: 600,
-          color: 'var(--color-text-primary)',
-          letterSpacing: '0.01em'
-        }}>
+      <label className="chart-selector-label">
+        <span className="chart-selector-label-text">
           Select Date
         </span>
         <select
           value={selectedDate}
           onChange={handleDateChange}
           disabled={!selectedTarget || availableDates.length === 0}
+          className="chart-selector-select"
           style={{
-            padding: 'var(--spacing-3) var(--spacing-3)',
-            border: '1px solid var(--color-neutral-300)',
-            borderRadius: 'var(--radius-md)',
-            fontSize: '0.9375rem',
-            fontFamily: 'inherit',
             backgroundColor: (!selectedTarget || availableDates.length === 0) ? 'var(--color-neutral-100)' : 'white',
-            color: (!selectedTarget || availableDates.length === 0) ? 'var(--color-neutral-500)' : (selectedDate ? 'var(--color-text-primary)' : 'var(--color-text-secondary)'),
-            cursor: (!selectedTarget || availableDates.length === 0) ? 'not-allowed' : 'pointer',
-            transition: 'all var(--transition-base)',
-            outline: 'none',
-            width: '100%'
+            color: (!selectedTarget || availableDates.length === 0) ? 'var(--color-neutral-500)' : (selectedDate ? 'var(--color-text-primary)' : 'var(--color-text-secondary)')
           }}
         >
           <option value="" disabled>

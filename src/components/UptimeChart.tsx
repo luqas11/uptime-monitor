@@ -95,10 +95,7 @@ export function UptimeChart({ data }: UptimeChartProps) {
   };
 
   return (
-    <div className="card" style={{
-      marginTop: 'var(--spacing-6)',
-      padding: 'var(--spacing-6)'
-    }}>
+    <div className="card uptime-chart-container">
       <ResponsiveContainer width="100%" height={400}>
         <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 70 }} >
           <XAxis
@@ -132,33 +129,15 @@ export function UptimeChart({ data }: UptimeChartProps) {
                       : 'var(--color-neutral-400)';
 
                 return (
-                  <div style={{
-                    backgroundColor: 'var(--tooltip-bg, white)',
-                    color: 'var(--color-text-primary)',
-                    padding: 'var(--spacing-3) var(--spacing-4)',
-                    border: '1px solid var(--color-neutral-300)',
-                    borderRadius: 'var(--radius-md)',
-                    boxShadow: 'var(--shadow-lg)',
-                    fontSize: '0.875rem'
-                  }}>
-                    <div style={{
-                      marginBottom: 'var(--spacing-2)',
-                      fontWeight: 500,
-                      color: 'var(--color-text-primary)'
-                    }}>
+                  <div className="chart-tooltip">
+                    <div className="chart-tooltip-time">
                       {formattedTime}
                     </div>
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 'var(--spacing-2)'
-                    }}>
-                      <div style={{
-                        width: '10px',
-                        height: '10px',
-                        borderRadius: '50%',
-                        backgroundColor: statusColor
-                      }}></div>
+                    <div className="chart-tooltip-status">
+                      <div
+                        className="chart-tooltip-indicator"
+                        style={{ backgroundColor: statusColor }}
+                      ></div>
                       <span style={{ color: 'var(--color-text-secondary)' }}>
                         {data.uptimeStatus === null
                           ? 'No data'

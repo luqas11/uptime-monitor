@@ -150,6 +150,158 @@ body {
   }
 }
 
+/* App Styles */
+.app-root {
+  min-height: 100vh;
+  background-color: var(--color-neutral-50, #f9fafb);
+  padding: var(--spacing-6) var(--spacing-4);
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  transition: background-color var(--transition-base);
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: var(--spacing-10);
+  padding-bottom: var(--spacing-6);
+  border-bottom: 2px solid var(--color-neutral-200);
+}
+
+.app-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
+}
+
+.app-loading {
+  text-align: center;
+  padding: var(--spacing-8);
+  color: var(--color-text-secondary);
+}
+
+.app-error {
+  margin-top: var(--spacing-6);
+  padding: var(--spacing-4) var(--spacing-5);
+  background-color: #fef2f2;
+  border: 1px solid var(--color-error);
+  border-radius: var(--radius-md);
+  color: #991b1b;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.app-error-title {
+  font-weight: 600;
+  margin-bottom: var(--spacing-1);
+  font-size: 0.95rem;
+}
+
+.app-error-message {
+  font-size: 0.875rem;
+  color: #dc2626;
+}
+
+.app-empty {
+  text-align: center;
+  padding: var(--spacing-12) var(--spacing-4);
+  color: var(--color-text-secondary);
+}
+
+.app-empty-title {
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin-bottom: var(--spacing-2);
+}
+
+.app-empty-message {
+  font-size: 0.875rem;
+}
+
+/* ChartSelector Styles */
+.chart-selector-container {
+  margin-bottom: var(--spacing-6);
+  display: flex;
+  gap: var(--spacing-5);
+  align-items: flex-end;
+  flex-wrap: wrap;
+  padding: var(--spacing-5);
+}
+
+.chart-selector-label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+  flex: 1 1 240px;
+  min-width: 200px;
+}
+
+.chart-selector-label-text {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  letter-spacing: 0.01em;
+}
+
+.chart-selector-select {
+  padding: var(--spacing-3) var(--spacing-3);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-md);
+  font-size: 0.9375rem;
+  font-family: inherit;
+  background-color: white;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  outline: none;
+  width: 100%;
+}
+
+.chart-selector-select:disabled {
+  background-color: var(--color-neutral-100);
+  color: var(--color-neutral-500);
+  cursor: not-allowed;
+}
+
+.chart-selector-loading {
+  text-align: center;
+  padding: var(--spacing-6);
+  color: var(--color-text-secondary);
+}
+
+/* UptimeChart Styles */
+.uptime-chart-container {
+  margin-top: var(--spacing-6);
+  padding: var(--spacing-6);
+}
+
+.chart-tooltip {
+  background-color: var(--tooltip-bg, white);
+  color: var(--color-text-primary);
+  padding: var(--spacing-3) var(--spacing-4);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  font-size: 0.875rem;
+}
+
+.chart-tooltip-time {
+  margin-bottom: var(--spacing-2);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.chart-tooltip-status {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+}
+
+.chart-tooltip-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .container {
