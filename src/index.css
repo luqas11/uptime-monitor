@@ -78,6 +78,19 @@ body {
     color: var(--color-text-primary);
     background-color: #ffffff;
   }
+
+  .app-error {
+    background-color: #fef2f2;
+    color: #991b1b;
+  }
+
+  .app-error-title {
+    color: #991b1b;
+  }
+
+  .app-error-message {
+    color: #dc2626;
+  }
 }
 
 /* Utility Classes */
@@ -166,10 +179,10 @@ body {
 .app-error {
   margin-top: var(--spacing-6);
   padding: var(--spacing-4) var(--spacing-5);
-  background-color: #fef2f2;
+  background-color: #7f1d1d;
   border: 1px solid var(--color-error);
   border-radius: var(--radius-md);
-  color: #991b1b;
+  color: #fca5a5;
   text-align: center;
   box-shadow: var(--shadow-sm);
 }
@@ -178,11 +191,12 @@ body {
   font-weight: 600;
   margin-bottom: var(--spacing-1);
   font-size: 0.95rem;
+  color: #fca5a5;
 }
 
 .app-error-message {
   font-size: 0.875rem;
-  color: #dc2626;
+  color: #f87171;
 }
 
 .app-empty {
