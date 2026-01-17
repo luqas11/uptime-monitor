@@ -8,6 +8,9 @@
 # Pull latest changes
 git pull
 
+# Generate manifest to include any new data files
+npm run generate-manifest
+
 # Add all files in the data folder
 git add data/
 
