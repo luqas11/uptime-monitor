@@ -28,23 +28,23 @@ A simple tool to monitor server uptime by pinging target IP addresses and visual
 
    **a. Ping Monitor** (run every minute):
    ```bash
-   * * * * * /path/to/uptime-monitor/scripts/ping_monitor.sh <TARGET_NAME> <IP_ADDRESS>
+   * * * * * /bin/bash /path/to/uptime-monitor/scripts/ping_monitor.sh <TARGET_NAME> <IP_ADDRESS>
    ```
    Example:
    ```bash
-   * * * * * /home/user/uptime-monitor/scripts/ping_monitor.sh server1 192.168.1.1
+   * * * * * /bin/bash /home/user/uptime-monitor/scripts/ping_monitor.sh server1 192.168.1.1
    ```
    This will ping the specified IP address once per minute and log the result to daily CSV files.
 
    **b. Data Sync** (run hourly):
    ```bash
-   0 * * * * /path/to/uptime-monitor/scripts/sync-data.sh
+   0 * * * * /bin/bash /path/to/uptime-monitor/scripts/sync-data.sh
    ```
    This script pulls latest changes, adds data files, commits and pushes to the repository.
 
    **c. Data Cleanup** (run daily):
    ```bash
-   0 2 * * * /path/to/uptime-monitor/scripts/cleanup-old-data.sh
+   0 2 * * * /bin/bash /path/to/uptime-monitor/scripts/cleanup-old-data.sh
    ```
    This script deletes CSV files older than 90 days based on filename date.
 
@@ -57,8 +57,8 @@ A simple tool to monitor server uptime by pinging target IP addresses and visual
 
 4. **Multiple monitors**: Set up separate cron jobs for each target you want to monitor:
    ```bash
-   * * * * * /path/to/uptime-monitor/scripts/ping_monitor.sh server1 192.168.1.1
-   * * * * * /path/to/uptime-monitor/scripts/ping_monitor.sh google_dns 8.8.8.8
+   * * * * * /bin/bash /path/to/uptime-monitor/scripts/ping_monitor.sh server1 192.168.1.1
+   * * * * * /bin/bash /path/to/uptime-monitor/scripts/ping_monitor.sh google_dns 8.8.8.8
    ```
    Each target will have its own folder with separate daily files.
 
