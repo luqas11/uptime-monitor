@@ -72,7 +72,8 @@ if ! validate_ip "$IP"; then
 fi
 
 # Define target directory
-TARGET_DIR="./data/${TARGET_NAME}"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+TARGET_DIR="$SCRIPT_DIR/../data/${TARGET_NAME}"
 
 # Ensure the target directory exists
 mkdir -p "$TARGET_DIR"

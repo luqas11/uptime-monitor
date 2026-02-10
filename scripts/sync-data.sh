@@ -5,6 +5,10 @@
 # Designed to run hourly via cron job
 # Usage: ./scripts/sync-data.sh
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$REPO_DIR" || exit 1
+
 # Pull latest changes
 git pull
 
