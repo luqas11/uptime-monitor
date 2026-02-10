@@ -1,7 +1,19 @@
 {
   "targets": [
     {
+      "name": "internet",
+      "dates": [
+        "2026-02-10"
+      ]
+    },
+    {
       "name": "riego",
+      "dates": [
+        "2026-02-10"
+      ]
+    },
+    {
+      "name": "sistema",
       "dates": [
         "2026-02-10"
       ]
