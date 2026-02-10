@@ -5,7 +5,8 @@
 # Designed to run daily via cron job
 # Usage: ./scripts/cleanup-old-data.sh
 
-DATA_DIR="./data"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+DATA_DIR="$SCRIPT_DIR/../data"
 DAYS=90
 
 # Calculate cutoff date (90 days ago)
