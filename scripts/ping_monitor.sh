@@ -140,19 +140,33 @@ perform_ping() {
     # Get current UNIX timestamp
     TIMESTAMP=$(date +%s)
     
-    # Ping the IP with 5 second timeout
-    # -n 1: send 1 packet (Windows syntax)
-    # -w 5000: timeout 5000 milliseconds = 5 seconds (Windows syntax)
-    # Capture ping output to check for success (Windows ping returns 0 even on failure)
-    PING_OUTPUT=$(ping -n 1 -w 5000 "$IP" 2>&1)
-    
-    # Check if ping was successful by looking for success indicators in output
-    # Successful ping contains: bytes=<number> (time|tiempo)=<number>ms TTL=<number>
-    if [[ "$PING_OUTPUT" =~ bytes=[0-9]+\ (time|tiempo)=[0-9]+ms\ TTL=[0-9]+ ]]; then
-        SUCCESS="true"
+    # Detect OS type
+    OS_TYPE="$(uname -s)"
+
+    if [[ "$OS_TYPE" =~ (MINGW|MSYS|CYGWIN) ]]; then
+        # -------- Windows Git Bash --------
+        PING_OUTPUT=$(ping -n 1 -w 5000 "$IP" 2>&1)
+
+        # Windows success pattern:
+        # bytes=32 time=23ms TTL=64   OR   bytes=32 tiempo=23ms TTL=64
+        if [[ "$PING_OUTPUT" =~ bytes=[0-9]+\ (time|tiempo)=[0-9]+ms\ TTL=[0-9]+ ]]; then
+            SUCCESS="true"
+        else
+            SUCCESS="false"
+        fi
     else
-        SUCCESS="false"
+        # -------- Linux / Ubuntu --------
+        PING_OUTPUT=$(ping -c 1 -W 5 "$IP" 2>&1)
+
+        # Linux success example:
+        # icmp_seq=1 ttl=64 time=8.27 ms
+        if [[ "$PING_OUTPUT" =~ icmp_seq=[0-9]+[[:space:]]+ttl=[0-9]+[[:space:]]+time=[0-9.]+[[:space:]]+ms ]]; then
+            SUCCESS="true"
+        else
+            SUCCESS="false"
+        fi
     fi
+
     
     # Write to CSV file
     echo "$TIMESTAMP,$SUCCESS" >> "$CSV_FILE"
