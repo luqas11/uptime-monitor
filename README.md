@@ -38,13 +38,13 @@ A simple tool to monitor server uptime by pinging target IP addresses and visual
 
    **b. Data Sync** (run hourly):
    ```bash
-   0 * * * * /bin/bash /path/to/uptime-monitor/scripts/sync-data.sh
+   @hourly /bin/bash /path/to/uptime-monitor/scripts/sync-data.sh
    ```
    This script pulls latest changes, adds data files, commits and pushes to the repository.
 
    **c. Data Cleanup** (run daily):
    ```bash
-   0 2 * * * /bin/bash /path/to/uptime-monitor/scripts/cleanup-old-data.sh
+   @daily /bin/bash /path/to/uptime-monitor/scripts/cleanup-old-data.sh
    ```
    This script deletes CSV files older than 90 days based on filename date.
 
