@@ -4,7 +4,7 @@
   "version": "1.3.3",
   "type": "module",
   "scripts": {
-    "generate-manifest": "node scripts/generate-manifest.js",
+    "generate-manifest": "node scripts/generate-manifest.cjs",
     "predev": "npm run generate-manifest",
     "dev": "vite",
     "prebuild": "npm run generate-manifest",
