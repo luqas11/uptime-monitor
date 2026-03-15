@@ -1,7 +1,5 @@
 # Server Uptime Monitor
 
-> **Note**: This project was built entirely using the [Cursor](https://cursor.com) AI agent, made to test the AI development process on a simple project.  
-
 A simple tool to monitor server uptime by pinging target IP addresses and visualizing the results in a web dashboard. Designed to run via cron jobs for automated monitoring.
 
 ![Server Uptime Monitor Dashboard](screenshot.png)
@@ -48,11 +46,6 @@ A simple tool to monitor server uptime by pinging target IP addresses and visual
    ```
    This script deletes CSV files older than 90 days based on filename date.
 
-   **Important**: 
-   - Use absolute paths in your crontab
-   - Ensure scripts are executable: `chmod +x scripts/*.sh`
-   - Edit your crontab with: `crontab -e`
-
 3. **Target naming rules**: The target name can only contain letters, numbers and underscores.
 
 4. **Multiple monitors**: Set up separate cron jobs for each target you want to monitor:
@@ -93,7 +86,7 @@ A simple tool to monitor server uptime by pinging target IP addresses and visual
   - Green bars indicate periods where all pings were successful (server was online)
   - Red bars indicate periods where all pings failed (server was offline)
   - Yellow bars indicate periods with mixed results (unstable - both successful and failed pings)
-  - Gray bars show periods with no data
+  - No bars will be shown where is no data
 
 ## Data Format
 
